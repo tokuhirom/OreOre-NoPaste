@@ -5,6 +5,6 @@
 </head>
 <body>
 <? block content => 'body here' ?>
-<a href="<?= req()->base ?>">nopaste top</a>
+<a href="<?= req()->base ?>/">nopaste top</a>
 </body>
 </html>
