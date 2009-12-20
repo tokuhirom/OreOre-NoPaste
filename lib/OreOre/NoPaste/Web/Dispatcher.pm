@@ -4,14 +4,14 @@ use feature 'switch';
 
 sub dispatch {
     my ($class, $req) = @_;
-    given ($req->path_info) {
-        when ('/') {
+    given ([$req->method, $req->path_info]) {
+        when (['GET', '/']) {
             call("Root", 'index');
         }
-        when ('/post') {
+        when (['POST', '/post']) {
             call("Root", 'post');
         }
-        when (qr{^/entry/(.+)$}) {
+        when (['GET', qr{^/entry/(.+)$}]) {
             call("Root", 'show', $1);
         }
         default {
