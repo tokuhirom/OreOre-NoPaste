@@ -14,7 +14,7 @@ init($tmp);
 
 my $app = OreOre::NoPaste::Web->app('./', {
     'M::DB' => {
-        dsn => ["dbi:SQLite:dbname=$tmp", '', '']
+        connect_info => ["dbi:SQLite:dbname=$tmp", '', '']
     },
 });
 test_psgi
