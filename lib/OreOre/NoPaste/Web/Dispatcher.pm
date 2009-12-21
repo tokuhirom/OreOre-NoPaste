@@ -1,6 +1,7 @@
 package OreOre::NoPaste::Web::Dispatcher;
 use Amon::Web::Dispatcher;
 use feature 'switch';
+use 5.010;
 
 sub dispatch {
     my ($class, $req) = @_;
