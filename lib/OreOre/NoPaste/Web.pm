@@ -1,5 +1,6 @@
 package OreOre::NoPaste::Web;
 use Amon::Web (
-view_class => 'MT',
+    default_view_class => 'OreOre::NoPaste::V::MT',
+    base_class => 'OreOre::NoPaste',
 );
 1;
