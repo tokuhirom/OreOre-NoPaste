@@ -10,7 +10,7 @@ my $dbh = DBI->connect(@$connect_info);
 my $sql = slurp("$dir/sql/nopaste.sql");
 $dbh->do($sql);
 
-OreOre::NoPaste::Web->app("$dir/", {
+OreOre::NoPaste::Web->app({
     'M::DB' => {
         connect_info => $connect_info
     }

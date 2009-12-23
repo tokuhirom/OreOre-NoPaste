@@ -12,7 +12,7 @@ use DBI;
 my $tmp = File::Temp->new(UNLINK => 1);
 init($tmp);
 
-my $app = OreOre::NoPaste::Web->app('./', {
+my $app = OreOre::NoPaste::Web->app({
     'M::DB' => {
         connect_info => ["dbi:SQLite:dbname=$tmp", '', '']
     },
