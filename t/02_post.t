@@ -12,11 +12,13 @@ use DBI;
 my $tmp = File::Temp->new(UNLINK => 1);
 init($tmp);
 
-my $app = OreOre::NoPaste::Web->app({
+my $app = OreOre::NoPaste::Web->app();
+no warnings 'once';
+local *OreOre::NoPaste::config = sub {{
     'M::DB' => {
         connect_info => ["dbi:SQLite:dbname=$tmp", '', '']
     },
-});
+}};
 test_psgi
     app => $app,
     client => sub {
