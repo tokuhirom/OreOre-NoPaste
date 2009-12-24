@@ -4,7 +4,7 @@ use DBI;
 use File::Slurp;
 use File::Basename;
 my $dir = dirname(__FILE__);
-my $connect_info = ["dbi:SQLite:dbname=$dir/../data.sqlite", '', ''];
+my $connect_info = ["dbi:SQLite:dbname=$dir/../data/data.sqlite", '', ''];
 my $dbh = DBI->connect(@$connect_info);
 my $sql = slurp("$dir/../sql/nopaste.sql");
 $dbh->do($sql);
