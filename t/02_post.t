@@ -14,6 +14,7 @@ init($tmp);
 
 my $app = OreOre::NoPaste::Web->app();
 no warnings 'once';
+no warnings 'redefine';
 local *OreOre::NoPaste::config = sub {{
     'M::DB' => {
         connect_info => ["dbi:SQLite:dbname=$tmp", '', '']
