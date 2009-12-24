@@ -1,5 +1,9 @@
 use strict;
 use OreOre::NoPaste::Web;
 
-OreOre::NoPaste::Web->app();
-
+my $app = OreOre::NoPaste::Web->app();
+if ($ENV{OREORE_NOPASTE_CONFIG_NAME} eq 'development') {
+    require Plack::Middleware::Debug;
+    $app = Plack::Middleware::Debug->wrap($app);
+}
+$app;
