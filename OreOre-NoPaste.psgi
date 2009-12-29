@@ -1,4 +1,4 @@
 use strict;
 use OreOre::NoPaste::Web;
 
-OreOre::NoPaste::Web->app();
+OreOre::NoPaste::Web->to_app();
