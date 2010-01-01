@@ -6,7 +6,7 @@ use File::Basename;
 my $dir = dirname(__FILE__);
 my $connect_info = ["dbi:SQLite:dbname=$dir/../data/data.sqlite", '', ''];
 my $dbh = DBI->connect(@$connect_info);
-my $sql = slurp("$dir/../sql/nopaste.sql");
+my $sql = slurp("$dir/../sql/sqlite.sql");
 $dbh->do($sql);
 
 sub slurp {

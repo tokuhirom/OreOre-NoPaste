@@ -42,7 +42,7 @@ done_testing;
 
 sub init {
     my $db = shift;
-    my $sql = slurp("sql/nopaste.sql");
+    my $sql = slurp("sql/sqlite.sql");
     my $dbh = DBI->connect("dbi:SQLite:dbname=$db", '', '');
     $dbh->do($sql);
 }
