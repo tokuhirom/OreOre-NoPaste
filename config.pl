@@ -5,5 +5,5 @@
             '', '', { sqlite_unicode => 1 }
         ],
     },
-    'V::MT' => { cache_mode => 6, },
+    'V::MT' => { cache_mode => 2, },
 };
