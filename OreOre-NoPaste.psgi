@@ -4,15 +4,20 @@ use OreOre::NoPaste;
 use OreOre::NoPaste::Web;
 use Plack::Builder;
 use File::Slurp qw/slurp/;
-
-my $config = do 'config.pl' or die "Cannot load configuration file: $@";
+use DBI;
 
 # init
-{
-    my $c = OreOre::NoPaste->new(config => $config);
-    my $sql =slurp("sql/sqlite.sql");
-    $c->model('DB')->dbh->do($sql) or die "Cannot install schema";
-}
+my $dbh = DBI->connect( "dbi:SQLite:dbname=data/data.sqlite",
+    '', '', { sqlite_unicode => 1 } ) or die $DBI::errstr;
+my $sql = slurp("sql/sqlite.sql");
+$dbh->do($sql) or die "Cannot install schema";
+
+my $config = {
+    'M::DB' => {
+        dbh => $dbh,
+    },
+    'V::MT' => { cache_mode => 2, },
+};
 
 builder {
     enable "Plack::Middleware::Static",
