@@ -10,15 +10,14 @@ sub index {
 }
 
 sub post {
-    if (my $body = req->param("body")) {
-        $body = decode_utf8($body);
+    if (my $body = param_decoded("body")) {
         my $uuid = $uuid_gen->create_str();
         my $dbh = model("DB")->dbh;
         my $sth = $dbh->prepare("INSERT INTO entry (id, body) values (?, ?)") or die $dbh->errstr;
         $sth->execute($uuid, $body) or die $dbh->errstr;
-        redirect("/entry/$uuid");
+        return redirect("/entry/$uuid");
     } else {
-        redirect('/');
+        return redirect('/');
     }
 }
 
@@ -31,12 +30,12 @@ sub show {
         $sth->execute($id) or die $dbh->errstr;
         my ($body) = $sth->fetchrow_array();
         if ($body) {
-            render('show.mt', $body);
+            return render('show.mt', $body);
         } else {
-            res_404();
+            return res_404();
         }
     } else {
-        res_404();
+        return res_404();
     }
 }
 
