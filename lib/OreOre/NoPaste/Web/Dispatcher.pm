@@ -7,16 +7,16 @@ sub dispatch {
     my ($class, $req) = @_;
     given ([$req->method, $req->path_info]) {
         when (['GET', '/']) {
-            call("Root", 'index');
+            return call("Root", 'index');
         }
         when (['POST', '/post']) {
-            call("Root", 'post');
+            return call("Root", 'post');
         }
         when (['GET', qr{^/entry/(.+)$}]) {
-            call("Root", 'show', $1);
+            return call("Root", 'show', $1);
         }
         default {
-            res_404();
+            return res_404();
         }
     }
 }
