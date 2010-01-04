@@ -13,7 +13,7 @@ my $sql = slurp("sql/sqlite.sql");
 $dbh->do($sql) or die "Cannot install schema";
 
 my $config = {
-    'M::DB' => {
+    'DB' => {
         dbh => $dbh,
     },
     'V::MT' => { cache_mode => 2, },

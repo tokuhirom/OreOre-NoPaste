@@ -12,9 +12,8 @@ sub index {
 sub post {
     if (my $body = param_decoded("body")) {
         my $uuid = $uuid_gen->create_str();
-        my $dbh = model("DB")->dbh;
-        my $sth = $dbh->prepare("INSERT INTO entry (id, body) values (?, ?)") or die $dbh->errstr;
-        $sth->execute($uuid, $body) or die $dbh->errstr;
+        my $sth = db->prepare("INSERT INTO entry (id, body) values (?, ?)") or die db->errstr;
+        $sth->execute($uuid, $body) or die db->errstr;
         return redirect("/entry/$uuid");
     } else {
         return redirect('/');
@@ -25,9 +24,8 @@ sub show {
     my ($class, $id) = @_;
 
     if ($id) {
-        my $dbh = model("DB")->dbh;
-        my $sth = $dbh->prepare('SELECT body FROM entry WHERE id=?') or die $dbh->errstr;
-        $sth->execute($id) or die $dbh->errstr;
+        my $sth = db->prepare('SELECT body FROM entry WHERE id=?') or die db->errstr;
+        $sth->execute($id) or die db->errstr;
         my ($body) = $sth->fetchrow_array();
         if ($body) {
             return render('show.mt', $body);

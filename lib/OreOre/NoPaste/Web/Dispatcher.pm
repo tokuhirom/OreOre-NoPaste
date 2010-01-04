@@ -4,7 +4,8 @@ use feature 'switch';
 use 5.010;
 
 sub dispatch {
-    my ($class, $req) = @_;
+    my ($class, $c) = @_;
+    my $req = $c->request;
     given ([$req->method, $req->path_info]) {
         when (['GET', '/']) {
             return call("Root", 'index');

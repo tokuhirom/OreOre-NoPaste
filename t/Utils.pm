@@ -10,7 +10,7 @@ sub make_app {
     $dbh->do($sql);
 
     my $app = OreOre::NoPaste::Web->to_app(config => {
-        'M::DB' => {
+        'DB' => {
             dbh => $dbh,
         },
     });
