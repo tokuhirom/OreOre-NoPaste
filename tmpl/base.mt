@@ -13,7 +13,10 @@
             <a href="<?= uri_for('/') ?>">Yet Another NoPaste Site</a>
         </div>
         <div id="Content"><? block content => 'body here' ?></div>
-        <div id="FooterContainer"><div id="Footer">Copyright (C) 2009 64p.org</div></div>
+        <div id="FooterContainer"><div id="Footer">
+            <div class="about">OreOre::NoPaste version <?= $OreOre::NoPaste::VERSION ?></div>
+            <div class="copyright">Copyright (C) 2009 64p.org</div>
+        </div></div>
     </div>
 </body>
 </html>
