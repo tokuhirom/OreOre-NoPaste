@@ -14,7 +14,8 @@ use t::Utils;
 my $app = t::Utils::make_app();
 
 my $mech = Test::WWW::Mechanize::PSGI->new(
-    app => $app
+    app          => $app,
+    max_redirect => 0,
 );
 $mech->get_ok('/');
 $mech->followable_links();
