@@ -58,7 +58,6 @@ form.nopaste p.submit-btn input {
     border-top: 1px solid black;
     font-size: 10px;
     color: black;
-    position:absolute;
     bottom:0px;
     height:20px;
     width:780px;
@@ -67,4 +66,5 @@ form.nopaste p.submit-btn input {
     text-align: right;
     padding-right: 10px;
     padding-top: 2px;
+    background-color: white;
 }
