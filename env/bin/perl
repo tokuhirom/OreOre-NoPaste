@@ -1,0 +1,2 @@
+#!/usr/local/app/perl-5.10.1/bin/perl
+exec '/usr/local/app/perl-5.10.1/bin/perl', '-Mlocal::lib=/home/tokuhirom/dev/OreOre-NoPaste/env', @ARGV
