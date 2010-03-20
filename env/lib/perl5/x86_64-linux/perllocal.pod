@@ -42,3 +42,25 @@ C<EXE_FILES: script/amon-setup.pl>
 
 =back
 
+=head2 Sun Mar 21 03:23:20 2010: C<Module> L<Data::UUID|Data::UUID>
+
+=over 4
+
+=item *
+
+C<installed into: /usr/local/webapp/nopaste/env/bin/../lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.203>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
