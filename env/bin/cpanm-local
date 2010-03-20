@@ -1,5 +1,7 @@
 #!/usr/local/app/perl-5.10.1/bin/perl
-use local::lib "/home/tokuhirom/dev/OreOre-NoPaste/env";
+use FindBin;
+use File::Spec;
+use lib File::Spec->catfile($FindBin::Bin, '..', 'lib', 'perl5');use local::lib File::Spec->catfile($FindBin::Bin, '..');
 
 # DO NOT EDIT -- this is an auto generated file
 use strict;
