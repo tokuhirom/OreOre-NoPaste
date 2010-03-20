@@ -14,7 +14,13 @@ $dbh->do($sql) or die "Cannot install schema";
 
 my $config = {
     'DB' => {
-        dbh => $dbh,
+        dsn      => 'dbi:SQLite:dbname=data/data.sqlite',
+        username => '',
+        password => '',
+        connect_options => +{
+            'mysql_enable_utf8' => 1,
+            'mysql_read_default_file' => '/etc/mysql/my.cnf',
+        },
     },
     'V::MT' => { cache_mode => 2, },
 };
