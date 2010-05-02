@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "Amon::Plugin::HTTPSession 3"
-.TH Amon::Plugin::HTTPSession 3 "2010-01-10" "perl v5.10.1" "User Contributed Perl Documentation"
+.TH Amon::Plugin::HTTPSession 3 "2010-04-03" "perl v5.12.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -139,7 +139,9 @@ Amon::Plugin::HTTPSession \- Plugin system for Amon
 \&    _\|_PACKAGE_\|_\->load_plugins(qw/HTTPSession/);
 \&
 \&    package MyApp::C::Root;
-\&    use Amon::Web::C;
+\&    use strict;
+\&    use warnings;
+\&    use Amon::Web::Declare;
 \&    sub index {
 \&        my $foo = c\->session\->get(\*(Aqfoo\*(Aq);
 \&        if ($foo) {
