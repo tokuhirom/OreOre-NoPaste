@@ -356,45 +356,54 @@ sub _define_basic_symbols {
 sub define_basic_operators {
     my($parser) = @_;
 
-    $parser->infix('*', 80);
-    $parser->infix('/', 80);
-    $parser->infix('%', 80);
+    $parser->prefix('!', 200);
+    $parser->prefix('+', 200);
+    $parser->prefix('-', 200);
 
-    $parser->infix('+', 70);
-    $parser->infix('-', 70);
-    $parser->infix('~', 70); # connect
+    $parser->infix('*', 180);
+    $parser->infix('/', 180);
+    $parser->infix('%', 180);
 
-    $parser->infix('<',  60);
-    $parser->infix('<=', 60);
-    $parser->infix('>',  60);
-    $parser->infix('>=', 60);
+    $parser->infix('+', 170);
+    $parser->infix('-', 170);
+    $parser->infix('~', 170); # connect
 
-    $parser->infix('==', 50);
-    $parser->infix('!=', 50);
+    $parser->infix('<',  160);
+    $parser->infix('<=', 160);
+    $parser->infix('>',  160);
+    $parser->infix('>=', 160);
 
-    $parser->infix('|',  40); # filter
+    $parser->infix('==', 150);
+    $parser->infix('!=', 150);
 
-    $parser->infixr('&&', 35);
-    $parser->infixr('||', 30);
-    $parser->infixr('//', 30);
+    $parser->infix('|',  140); # filter
+
+    $parser->infixr('&&', 130);
+
+    $parser->infixr('||', 120);
+    $parser->infixr('//', 120);
+    $parser->infix('min', 120);
+    $parser->infix('max', 120);
 
     $parser->symbol(':');
-    $parser->infix('?', 20, \&_led_ternary);
+    $parser->infix('?', 110, \&_led_ternary);
 
-    $parser->assignment('=');
-    $parser->assignment('+=');
-    $parser->assignment('-=');
-    $parser->assignment('*=');
-    $parser->assignment('/=');
-    $parser->assignment('%=');
-    $parser->assignment('~=');
-    $parser->assignment('&&=');
-    $parser->assignment('||=');
-    $parser->assignment('//=');
+    $parser->assignment('=',   100);
+    $parser->assignment('+=',  100);
+    $parser->assignment('-=',  100);
+    $parser->assignment('*=',  100);
+    $parser->assignment('/=',  100);
+    $parser->assignment('%=',  100);
+    $parser->assignment('~=',  100);
+    $parser->assignment('&&=', 100);
+    $parser->assignment('||=', 100);
+    $parser->assignment('//=', 100);
 
-    $parser->prefix('!');
-    $parser->prefix('+');
-    $parser->prefix('-');
+    $parser->prefix('not', 70);
+    $parser->infix('and',  60);
+    $parser->infix('or',   50);
+
+    return;
 }
 
 sub define_symbols {
@@ -413,20 +422,20 @@ sub define_symbols {
     # operators
     $parser->define_basic_operators();
 
-    $parser->infix('.', 100, \&_led_dot);
-    $parser->infix('[', 100, \&_led_fetch);
-    $parser->infix('(', 100, \&_led_call);
+    $parser->infix('.', 256, \&_led_dot);
+    $parser->infix('[', 256, \&_led_fetch);
+    $parser->infix('(', 256, \&_led_call);
 
-    $parser->prefix('(', \&_nud_paren);
+    $parser->prefix('(', 200, \&_nud_paren);
 
     # constants
     $parser->define_constant('nil', undef);
 
     # statements
     $parser->symbol('{')        ->set_std(\&_std_block);
-    #$parser->symbol('var')      ->set_std(\&_std_var);
-    $parser->symbol('for')      ->set_std(\&_std_for);
     $parser->symbol('if')       ->set_std(\&_std_if);
+    $parser->symbol('for')      ->set_std(\&_std_for);
+    $parser->symbol('while' )   ->set_std(\&_std_while);
 
     $parser->symbol('include')  ->set_std(\&_std_command);
 
@@ -532,6 +541,22 @@ sub expression {
     return $left;
 }
 
+sub expression_list {
+    my($parser) = @_;
+
+    my @args;
+    if($parser->token->id ne ")") {
+        while(1) {
+            push @args, $parser->expression(0);
+            if($parser->token->id ne ",") {
+                last;
+            }
+            $parser->advance(",");
+        }
+    }
+    return \@args;
+}
+
 sub _led_infix {
     my($parser, $symbol, $left) = @_;
     my $bin = $symbol->clone(arity => 'binary');
@@ -571,9 +596,9 @@ sub _led_assignment {
 }
 
 sub assignment {
-    my($parser, $id) = @_;
+    my($parser, $id, $bp) = @_;
 
-    $parser->symbol($id, 10)->set_led(\&_led_assignment);
+    $parser->symbol($id, $bp)->set_led(\&_led_assignment);
     return;
 }
 
@@ -606,6 +631,14 @@ sub _led_dot {
     $dot->second($t->clone(arity => 'literal'));
 
     $parser->advance();
+
+    if($parser->token->id eq "(") {
+        $parser->advance("(");
+        $dot->third( $parser->expression_list() );
+        $parser->advance(")");
+        $dot->arity("methodcall");
+    }
+
     return $dot;
 }
 
@@ -625,22 +658,10 @@ sub _led_call {
     my($parser, $symbol, $left) = @_;
 
     my $call = $symbol->clone(arity => 'call');
-
     $call->first($left);
 
-    my @args;
-    if($parser->token->id ne ")") {
-        while(1) {
-            push @args, $parser->expression(0);
-            if($parser->token->id ne ",") {
-                last;
-            }
-            $parser->advance(",");
-        }
-    }
+    $call->second( $parser->expression_list() );
     $parser->advance(")");
-
-    $call->second(\@args);
 
     return $call;
 }
@@ -649,14 +670,16 @@ sub _nud_prefix {
     my($parser, $symbol) = @_;
     my $un = $symbol->clone(arity => 'unary');
     $parser->reserve($un);
-    $un->first($parser->expression(90));
+    $un->first($parser->expression($symbol->ubp));
     return $un;
 }
 
 sub prefix {
-    my($parser, $id, $nud) = @_;
+    my($parser, $id, $bp, $nud) = @_;
 
-    $parser->symbol($id)->set_nud($nud || \&_nud_prefix);
+    my $symbol = $parser->symbol($id);
+    $symbol->ubp($bp);
+    $symbol->set_nud($nud || \&_nud_prefix);
     return;
 }
 
@@ -896,35 +919,57 @@ sub _std_block {
 #    return @a;
 #}
 
+# -> VARS { STATEMENTS }
+# ->      { STATEMENTS }
+sub _pointy {
+    my($parser, $node) = @_;
+
+    $parser->advance("->");
+
+    $parser->new_scope();
+    my @vars;
+    if($parser->token->id ne "{") {
+        my $paren = ($parser->token->id eq "(");
+
+        $parser->advance("(") if $paren;
+
+        while((my $t = $parser->token)->arity eq "variable") {
+            push @vars, $t;
+            $parser->define($t);
+            $parser->advance();
+
+            if($parser->token->id eq ",") {
+                $parser->advance(",");
+            }
+        }
+
+        $parser->advance(")") if $paren;
+    }
+    $node->second( \@vars );
+
+    $parser->advance("{");
+    $node->third($parser->statements());
+    $parser->advance("}");
+    $parser->pop_scope();
+
+    return;
+}
+
 sub _std_for {
     my($parser, $symbol) = @_;
 
-    my $proc = $symbol->clone(arity => "for");
-
+    my $proc = $symbol->clone(arity => 'for');
     $proc->first( $parser->expression(0) );
+    $parser->_pointy($proc);
+    return $proc;
+}
 
-    $parser->new_scope();
+sub _std_while {
+    my($parser, $symbol) = @_;
 
-    $parser->advance("->");
-    $parser->advance("(");
-
-    my @vars;
-
-    while((my $t = $parser->token)->arity eq "variable") {
-        push @vars, $t;
-        $parser->define($t);
-        $parser->advance;
-    }
-
-    $proc->second( \@vars );
-
-    $parser->advance(")");
-    $parser->advance("{");
-    $proc->third($parser->statements());
-    $parser->advance("}");
-
-    $parser->pop_scope();
-
+    my $proc = $symbol->clone(arity => 'while');
+    $proc->first( $parser->expression(0) );
+    $parser->_pointy($proc);
     return $proc;
 }
 
@@ -940,32 +985,7 @@ sub _std_proc {
     $parser->define_macro($name->id);
     $proc->first( $name->id );
     $parser->advance();
-
-    $parser->new_scope();
-    $parser->advance("->");
-    my @vars;
-    if($parser->token->id eq "(") {
-        $parser->advance("(");
-
-        while((my $t = $parser->token)->arity eq "variable") {
-            push @vars, $t;
-            $parser->define($t);
-            $parser->advance;
-
-            if($parser->token->id eq ",") {
-                $parser->advance(",");
-            }
-        }
-
-        $parser->advance(")");
-    }
-    $proc->second( \@vars );
-
-    $parser->advance("{");
-    $proc->third($parser->statements());
-    $parser->advance("}");
-    $parser->pop_scope();
-
+    $parser->_pointy($proc);
     return $proc;
 }
 
@@ -989,19 +1009,12 @@ sub _std_if {
 
 sub _std_command {
     my($parser, $symbol) = @_;
-    my @args;
+    my $args;
     if($parser->token->id ne ";") {
-        while(1) {
-            push @args, $parser->expression(0);
-
-            if($parser->token->id ne ",") {
-                last;
-            }
-            $parser->advance(",");
-        }
+        $args = $parser->expression_list();
     }
     $parser->advance(";");
-    return $symbol->clone(first => \@args, arity => 'command');
+    return $symbol->clone(first => $args, arity => 'command');
 }
 
 sub _get_bare_name {

@@ -41,13 +41,28 @@ Kolon is the default syntax, using C<< <: ... :> >> tags and C<< : ... >> line c
 
 Variables may be HASH references, ARRAY references, or objects.
 
-=head2 Loop for array references
+If I<$var> is an object instance, you can call its methods.
 
-    : for $data ->($item) {
+    <: $var.foo() :>
+    <: $var.foo(1, 2, 3) :>
+
+=head2 Loops
+
+There are C<for> and C<while> loops.
+
+    : # $data must be an ARRAY reference
+    : for $data -> $item {
+        [<: $item.field :>]
+    : }
+
+    : # $obj must be an iteratable object
+    : while $obj.fetch -> $item {
         [<: $item.field :>]
     : }
 
 =head2 Conditional statements
+
+if-then-else statement:
 
     : if $var == nil {
         $var is nil.
@@ -65,6 +80,20 @@ Variables may be HASH references, ARRAY references, or objects.
 
     : $var.value == nil ? "nil" : $var.value
 
+switch statement:
+
+    : given $var -> $it {
+    :   when "foo" {
+            it is foo.
+    :   }
+    :   when $it == "bar" or $it == "baz" {
+            it is bar or baz.
+    :   }
+    :   default {
+            it is not foo nor bar.
+        }
+    :
+
 =head2 Expressions
 
 Relational operators (C<< == != < <= > >= >>):
@@ -72,12 +101,18 @@ Relational operators (C<< == != < <= > >= >>):
     : $var == 10 ? "10"     : "not 10"
     : $var != 10 ? "not 10" : "10"
 
-Arithmetic operators (C<< + - * / % >>):
+Note that C<==> and C<!=> are similar to Perl's C<eq> and C<ne> except that
+C<$var == nil> is true B<iff> I<$var> is uninitialized, while other
+relational operators are numerical operators.
+
+Arithmetic operators (C<< + - * / % min max>>):
 
     : $var * 10_000
     : ($var % 10) == 0
+    : 10 min 20 min 30 # 10
+    : 10 max 20 max 30 # 30
 
-Logical operators (C<< || && // >>)
+Logical operators (C<< ! && || // not and or>>)
 
     : $var >= 0 && $var <= 10 ? "ok" : "too smaller or too larger"
     : $var // "foo" # as a default value
@@ -86,9 +121,20 @@ String operators (C<< ~ >>)
 
     : "[" ~ $var ~ "]" # concatination
 
-Operator precedence:
+Operator precedence is the same as Perl's:
 
-    (TODO)
+    . () []
+    * / %
+    + - ~
+    < <= > >=
+    == !=
+    |
+    &&
+    || // min max
+    ?:
+    not
+    and
+    or
 
 =head2 Functions and filters
 
@@ -144,7 +190,7 @@ Another derived template F<mytmpl/foo.tx>:
     : cascade mytmpl::base
     : # use default title
     : around body -> {
-        My Template Body!
+        My template body!
     : }
 
 Yet another derived template F<mytmpl/bar.tx>:
@@ -174,8 +220,8 @@ Output:
         --------------
 
         Before body!
-        My Template Body!
-        After Body!
+        My template tody!
+        After body!
 
 This is also called as B<template inheritance>.
 

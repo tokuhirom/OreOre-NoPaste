@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "Text::Xslate::Syntax::Kolon 3"
-.TH Text::Xslate::Syntax::Kolon 3 "2010-05-01" "perl v5.12.0" "User Contributed Perl Documentation"
+.TH Text::Xslate::Syntax::Kolon 3 "2010-05-02" "perl v5.12.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -160,15 +160,32 @@ Kolon is the default syntax, using \f(CW\*(C`<: ... :>\*(C'\fR tags and \f(CW\*(
 .Ve
 .PP
 Variables may be \s-1HASH\s0 references, \s-1ARRAY\s0 references, or objects.
-.SS "Loop for array references"
-.IX Subsection "Loop for array references"
-.Vb 3
-\&    : for $data \->($item) {
+.PP
+If \fI\f(CI$var\fI\fR is an object instance, you can call its methods.
+.PP
+.Vb 2
+\&    <: $var.foo() :>
+\&    <: $var.foo(1, 2, 3) :>
+.Ve
+.SS "Loops"
+.IX Subsection "Loops"
+There are \f(CW\*(C`for\*(C'\fR and \f(CW\*(C`while\*(C'\fR loops.
+.PP
+.Vb 4
+\&    : # $data must be an ARRAY reference
+\&    : for $data \-> $item {
+\&        [<: $item.field :>]
+\&    : }
+\&
+\&    : # $obj must be an iteratable object
+\&    : while $obj.fetch \-> $item {
 \&        [<: $item.field :>]
 \&    : }
 .Ve
 .SS "Conditional statements"
 .IX Subsection "Conditional statements"
+if-then-else statement:
+.PP
 .Vb 9
 \&    : if $var == nil {
 \&        $var is nil.
@@ -186,6 +203,22 @@ Variables may be \s-1HASH\s0 references, \s-1ARRAY\s0 references, or objects.
 \&
 \&    : $var.value == nil ? "nil" : $var.value
 .Ve
+.PP
+switch statement:
+.PP
+.Vb 11
+\&    : given $var \-> $it {
+\&    :   when "foo" {
+\&            it is foo.
+\&    :   }
+\&    :   when $it == "bar" or $it == "baz" {
+\&            it is bar or baz.
+\&    :   }
+\&    :   default {
+\&            it is not foo nor bar.
+\&        }
+\&    :
+.Ve
 .SS "Expressions"
 .IX Subsection "Expressions"
 Relational operators (\f(CW\*(C`== != < <= > >=\*(C'\fR):
@@ -195,14 +228,20 @@ Relational operators (\f(CW\*(C`== != < <= > >=\*(C'\fR):
 \&    : $var != 10 ? "not 10" : "10"
 .Ve
 .PP
-Arithmetic operators (\f(CW\*(C`+ \- * / %\*(C'\fR):
+Note that \f(CW\*(C`==\*(C'\fR and \f(CW\*(C`!=\*(C'\fR are similar to Perl's \f(CW\*(C`eq\*(C'\fR and \f(CW\*(C`ne\*(C'\fR except that
+\&\f(CW\*(C`$var == nil\*(C'\fR is true \fBiff\fR \fI\f(CI$var\fI\fR is uninitialized, while other
+relational operators are numerical operators.
 .PP
-.Vb 2
+Arithmetic operators (\f(CW\*(C`+ \- * / % min max>>):\*(C'\fR
+.PP
+.Vb 4
 \&    : $var * 10_000
 \&    : ($var % 10) == 0
+\&    : 10 min 20 min 30 # 10
+\&    : 10 max 20 max 30 # 30
 .Ve
 .PP
-Logical operators (\f(CW\*(C`|| && //\*(C'\fR)
+Logical operators (\f(CW\*(C`! && || // not and or>>)\*(C'\fR
 .PP
 .Vb 2
 \&    : $var >= 0 && $var <= 10 ? "ok" : "too smaller or too larger"
@@ -215,10 +254,21 @@ String operators (\f(CW\*(C`~\*(C'\fR)
 \&    : "[" ~ $var ~ "]" # concatination
 .Ve
 .PP
-Operator precedence:
+Operator precedence is the same as Perl's:
 .PP
-.Vb 1
-\&    (TODO)
+.Vb 12
+\&    . () []
+\&    * / %
+\&    + \- ~
+\&    < <= > >=
+\&    == !=
+\&    |
+\&    &&
+\&    || // min max
+\&    ?:
+\&    not
+\&    and
+\&    or
 .Ve
 .SS "Functions and filters"
 .IX Subsection "Functions and filters"
@@ -281,7 +331,7 @@ Another derived template \fImytmpl/foo.tx\fR:
 \&    : cascade mytmpl::base
 \&    : # use default title
 \&    : around body \-> {
-\&        My Template Body!
+\&        My template body!
 \&    : }
 .Ve
 .PP
@@ -317,8 +367,8 @@ Output:
 \&        \-\-\-\-\-\-\-\-\-\-\-\-\-\-
 \&
 \&        Before body!
-\&        My Template Body!
-\&        After Body!
+\&        My template tody!
+\&        After body!
 .Ve
 .PP
 This is also called as \fBtemplate inheritance\fR.
@@ -341,3 +391,12 @@ That is, macros themselves output nothing.
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
 Text::Xslate
+.SH "POD ERRORS"
+.IX Header "POD ERRORS"
+Hey! \fBThe above document had some coding errors, which are explained below:\fR
+.IP "Around line 108:" 4
+.IX Item "Around line 108:"
+Unterminated C< ... > sequence
+.IP "Around line 115:" 4
+.IX Item "Around line 115:"
+Unterminated C< ... > sequence
