@@ -1,0 +1,4 @@
+: cascade 'base.tx';
+: around content -> {
+<pre><:= $body :></pre>
+: }

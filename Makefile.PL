@@ -6,5 +6,6 @@ tests 't/*.t t/*/*.t t/*/*/*.t';
 recursive_author_tests 'xt';
 requires 'Data::UUID';
 requires 'Amon';
+requires 'Text::Xslate';
 
 WriteAll;

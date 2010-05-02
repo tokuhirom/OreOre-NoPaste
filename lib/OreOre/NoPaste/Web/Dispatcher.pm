@@ -6,7 +6,7 @@ use Encode;
 my $uuid_gen = Data::UUID->new;
 
 get '/' => sub {
-    render("index.mt");
+    render("index.tx");
 };
 
 post '/post' => sub {
@@ -35,7 +35,7 @@ get '/entry/{entry_id}' => sub {
     );
     return res_404() unless $entry;
 
-    return render('show.mt', $entry->body);
+    return render('show.tx', {body => $entry->body});
 };
 
 1;

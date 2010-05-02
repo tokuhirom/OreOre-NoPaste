@@ -5,6 +5,7 @@ use OreOre::NoPaste::Web;
 use Plack::Builder;
 use File::Slurp qw/slurp/;
 use DBI;
+use Data::Dumper;
 
 # init
 my $dbh = DBI->connect( "dbi:SQLite:dbname=data/data.sqlite",
@@ -22,8 +23,9 @@ my $config = {
             'mysql_read_default_file' => '/etc/mysql/my.cnf',
         },
     },
-    'V::MT' => { cache_mode => 2, },
+    'V::Xslate' => { cache => 0, function => { Dumper => \&Data::Dumper::Dumper, } },
 };
+print "$]\n";
 
 builder {
     enable "Plack::Middleware::Static",
