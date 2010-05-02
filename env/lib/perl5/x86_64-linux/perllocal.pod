@@ -64,3 +64,25 @@ C<EXE_FILES: >
 
 =back
 
+=head2 Mon Mar 22 20:55:18 2010: C<Module> L<DBIx::Skinny|DBIx::Skinny>
+
+=over 4
+
+=item *
+
+C<installed into: /usr/local/webapp/nopaste/env/bin/../lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.0705>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
