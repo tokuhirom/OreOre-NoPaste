@@ -1,0 +1,22 @@
+=head2 Sun May  2 17:18:33 2010: C<Module> L<Amon|Amon>
+
+=over 4
+
+=item *
+
+C<installed into: /home/tokuhirom/dev/OreOre-NoPaste/env/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.41>
+
+=item *
+
+C<EXE_FILES: script/amon-setup.pl>
+
+=back
+

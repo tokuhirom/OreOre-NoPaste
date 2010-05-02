@@ -24,6 +24,7 @@
 /home/tokuhirom/dev/OreOre-NoPaste/env/lib/perl5/Amon/V/MT/Context.pm
 /home/tokuhirom/dev/OreOre-NoPaste/env/lib/perl5/Amon/V/TT.pm
 /home/tokuhirom/dev/OreOre-NoPaste/env/lib/perl5/Amon/V/TemplateBase.pm
+/home/tokuhirom/dev/OreOre-NoPaste/env/lib/perl5/Amon/V/Xslate.pm
 /home/tokuhirom/dev/OreOre-NoPaste/env/lib/perl5/Amon/Web.pm
 /home/tokuhirom/dev/OreOre-NoPaste/env/lib/perl5/Amon/Web/Declare.pm
 /home/tokuhirom/dev/OreOre-NoPaste/env/lib/perl5/Amon/Web/Dispatcher.pm
@@ -51,6 +52,7 @@
 /home/tokuhirom/dev/OreOre-NoPaste/env/man/man3/Amon::Util.3
 /home/tokuhirom/dev/OreOre-NoPaste/env/man/man3/Amon::V::MT.3
 /home/tokuhirom/dev/OreOre-NoPaste/env/man/man3/Amon::V::TT.3
+/home/tokuhirom/dev/OreOre-NoPaste/env/man/man3/Amon::V::Xslate.3
 /home/tokuhirom/dev/OreOre-NoPaste/env/man/man3/Amon::Web::Declare.3
 /home/tokuhirom/dev/OreOre-NoPaste/env/man/man3/Amon::Web::Dispatcher.3
 /home/tokuhirom/dev/OreOre-NoPaste/env/man/man3/Amon::Web::Dispatcher::Lite.3
