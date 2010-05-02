@@ -152,7 +152,7 @@ This document describes Text::Xslate version 0.1006.
 \&
 \&    # for files
 \&    my $tx = Text::Xslate\->new();
-\&    print $tx\->render_file(\*(Aqhello.tx\*(Aq, \e%vars);
+\&    print $tx\->render(\*(Aqhello.tx\*(Aq, \e%vars);
 \&
 \&    # for strings
 \&    my $template = q{
@@ -233,11 +233,6 @@ Possible options ares:
 .el .IP "\f(CWstring => $template_string\fR" 4
 .IX Item "string => $template_string"
 Specifies the template string, which is called \f(CW\*(C`<input>\*(C'\fR internally.
-.ie n .IP """file => $template_file | \e@template_files""" 4
-.el .IP "\f(CWfile => $template_file | \e@template_files\fR" 4
-.IX Item "file => $template_file | @template_files"
-Specifies file(s) to be preloaded. Note that \f(CW\*(C`render()\*(C'\fR loads files
-automatically, so this option is not necessarily required.
 .ie n .IP """path => \e@path // ["".""]""" 4
 .el .IP "\f(CWpath => \e@path // [``.'']\fR" 4
 .IX Item "path => @path // ["".""]"

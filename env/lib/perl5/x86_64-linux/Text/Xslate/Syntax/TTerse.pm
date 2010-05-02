@@ -18,8 +18,6 @@ sub define_symbols {
 
     $parser->symbol('IN');
 
-    $parser->symbol('INCLUDE') ->set_std(\&_std_command);
-
     $parser->symbol('IF')      ->set_std(\&_std_if);
     $parser->symbol('FOREACH') ->set_std(\&_std_foreach);
 
@@ -115,16 +113,6 @@ sub _std_foreach {
 
     $parser->advance("END");
     return $proc;
-}
-
-sub _std_command {
-    my($parser, $symbol) = @_;
-    my $args;
-    if($parser->token->id ne ";") {
-        $args = $parser->expression_list();
-    }
-    $parser->advance(";");
-    return $symbol->clone(first => $args, id => 'include', arity => 'command');
 }
 
 no Mouse;
