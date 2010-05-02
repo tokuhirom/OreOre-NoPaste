@@ -23,13 +23,6 @@ has lbp => (
     default  => 0,
 );
 
-has ubp => (
-    is       => 'rw',
-    isa      => 'Int',
-
-    required => 0,
-);
-
 has value => (
     is      => 'rw',
 

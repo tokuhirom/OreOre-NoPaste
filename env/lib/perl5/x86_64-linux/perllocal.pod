@@ -174,3 +174,25 @@ C<EXE_FILES: >
 
 =back
 
+=head2 Sun May  2 18:23:36 2010: C<Module> L<Text::Xslate|Text::Xslate>
+
+=over 4
+
+=item *
+
+C<installed into: /home/tokuhirom/dev/OreOre-NoPaste/env/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.1006>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+

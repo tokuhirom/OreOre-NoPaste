@@ -41,8 +41,9 @@ sub new {
 
     my $self = bless \%args, $class;
 
-    if(exists $args{file}) {
-        Carp::carp('"file" option makes no sense. Use render($file, \%vars) directly');
+    if(my $file = $args{file}) {
+        $self->load_file($_)
+            for ref($file) ? @{$file} : $file;
     }
 
     $self->_load_input();
@@ -252,7 +253,7 @@ This document describes Text::Xslate version 0.1006.
 
     # for files
     my $tx = Text::Xslate->new();
-    print $tx->render('hello.tx', \%vars);
+    print $tx->render_file('hello.tx', \%vars);
 
     # for strings
     my $template = q{
@@ -322,7 +323,7 @@ alternative.
 
 =head2 Methods
 
-=head3 B<< Text::Xslate->new(%options) :XslateEngine >>
+=head3 B<< Text::Xslate->new(%options) -> Xslate >>
 
 Creates a new xslate template engine.
 
@@ -333,6 +334,11 @@ Possible options ares:
 =item C<< string => $template_string >>
 
 Specifies the template string, which is called C<< <input> >> internally.
+
+=item C<< file => $template_file | \@template_files >>
+
+Specifies file(s) to be preloaded. Note that C<render()> loads files
+automatically, so this option is not necessarily required.
 
 =item C<< path => \@path // ["."] >>
 
@@ -368,7 +374,7 @@ If I<$moniker> is undefined, the default parser will be used.
 
 =back
 
-=head3 B<< $tx->render($file, \%vars) :Str >>
+=head3 B<< $tx->render($file, \%vars) -> Str >>
 
 Renders a template with variables, and returns the result.
 
@@ -376,18 +382,11 @@ If I<$file> is omitted, C<< <input> >> is used. See the C<string> option for C<n
 
 Note that I<$file> may be cached according to the cache level.
 
-=head3 B<< $tx->load_file($file) :Void >>
-
-Loads I<$file> for following C<render($file, \%vars)>. Compiles and caches it
-if needed.
-
-This method may be used for pre-compiling template files.
-
 =head3 Exportable functions
 
 =head3 C<< escaped_string($str :Str) -> EscapedString >>
 
-Marks I<$str> as escaped. Escaped strings will not be escaped by the engine,
+Mark I<$str> as escaped. Escaped strings will not be escaped by the engine,
 so you have to escape these strings.
 
 For example:
@@ -419,34 +418,10 @@ C<< % ... >> line code, instead of C<< <: ... :> >> and C<< : ... >>.
 
 =item TTerse
 
-B<TTerse> is a syntax that is a subset of Template-Toolkit 2,
+B<TTerse> is a syntax that is a subset of Template-Toolkit 2, called B<TTerse>,
 which is explained in L<Text::Xslate::Syntax::TTerse>.
 
 =back
-
-=head1 NOTES
-
-In Xslate templates, you cannot use C<undef> as a valid value.
-The use of C<undef> will cause fatal errors as if
-C<use warnings FALTAL => "all"> was specified.
-However, unlike Perl, you can use equal operators to check whether
-the value is defined or not:
-
-    : if $value == nil { ; }
-    : if $value != nil { ; }
-
-    [% # on TTerse syntax -%]
-    [% IF $value == nil %] [% END %]
-    [% IF $value != nil %] [% END %]
-
-Or, you can also use defined-or operator (//):
-
-    : # on Kolon syntax
-    Hello, <: $value // "Xslate" :> world!
-
-    [% # on TTerse syntax %]
-    Hello, [% $value // "Xslate" %] world!
-
 
 =head1 DEPENDENCIES
 

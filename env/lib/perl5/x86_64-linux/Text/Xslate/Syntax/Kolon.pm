@@ -41,28 +41,13 @@ Kolon is the default syntax, using C<< <: ... :> >> tags and C<< : ... >> line c
 
 Variables may be HASH references, ARRAY references, or objects.
 
-If I<$var> is an object instance, you can call its methods.
+=head2 Loop for array references
 
-    <: $var.foo() :>
-    <: $var.foo(1, 2, 3) :>
-
-=head2 Loops
-
-There are C<for> and C<while> loops.
-
-    : # $data must be an ARRAY reference
-    : for $data -> $item {
-        [<: $item.field :>]
-    : }
-
-    : # $obj must be an iteratable object
-    : while $obj.fetch -> $item {
+    : for $data ->($item) {
         [<: $item.field :>]
     : }
 
 =head2 Conditional statements
-
-if-then-else statement:
 
     : if $var == nil {
         $var is nil.
@@ -80,20 +65,6 @@ if-then-else statement:
 
     : $var.value == nil ? "nil" : $var.value
 
-switch statement:
-
-    : given $var -> $it {
-    :   when "foo" {
-            it is foo.
-    :   }
-    :   when $it == "bar" or $it == "baz" {
-            it is bar or baz.
-    :   }
-    :   default {
-            it is not foo nor bar.
-        }
-    :
-
 =head2 Expressions
 
 Relational operators (C<< == != < <= > >= >>):
@@ -101,18 +72,12 @@ Relational operators (C<< == != < <= > >= >>):
     : $var == 10 ? "10"     : "not 10"
     : $var != 10 ? "not 10" : "10"
 
-Note that C<==> and C<!=> are similar to Perl's C<eq> and C<ne> except that
-C<$var == nil> is true B<iff> I<$var> is uninitialized, while other
-relational operators are numerical operators.
-
-Arithmetic operators (C<< + - * / % min max>>):
+Arithmetic operators (C<< + - * / % >>):
 
     : $var * 10_000
     : ($var % 10) == 0
-    : 10 min 20 min 30 # 10
-    : 10 max 20 max 30 # 30
 
-Logical operators (C<< ! && || // not and or>>)
+Logical operators (C<< || && // >>)
 
     : $var >= 0 && $var <= 10 ? "ok" : "too smaller or too larger"
     : $var // "foo" # as a default value
@@ -121,20 +86,9 @@ String operators (C<< ~ >>)
 
     : "[" ~ $var ~ "]" # concatination
 
-Operator precedence is the same as Perl's:
+Operator precedence:
 
-    . () []
-    * / %
-    + - ~
-    < <= > >=
-    == !=
-    |
-    &&
-    || // min max
-    ?:
-    not
-    and
-    or
+    (TODO)
 
 =head2 Functions and filters
 
@@ -190,7 +144,7 @@ Another derived template F<mytmpl/foo.tx>:
     : cascade mytmpl::base
     : # use default title
     : around body -> {
-        My template body!
+        My Template Body!
     : }
 
 Yet another derived template F<mytmpl/bar.tx>:
@@ -220,8 +174,8 @@ Output:
         --------------
 
         Before body!
-        My template tody!
-        After body!
+        My Template Body!
+        After Body!
 
 This is also called as B<template inheritance>.
 

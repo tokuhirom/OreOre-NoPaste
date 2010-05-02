@@ -33,24 +33,18 @@ my %bin = (
 
     '|'  => 'filt',
 
-    'min' => 'lt', # a < b ? a : b
-    'max' => 'gt', # a > b ? a : b
-
     '['  => 'fetch_field',
 );
-my %logical_bin = (
-    '&&'  => 'and',
-    'and' => 'and',
-    '||'  => 'or',
-    'or'  => 'or',
-    '//'  => 'dor',
+my %bin_r = (
+    '&&' => 'and',
+    '||' => 'or',
+    '//' => 'dor',
 );
 
 my %unary = (
-    '!'   => 'not',
-    'not' => 'not',
-    '+'   => 'plus',
-    '-'   => 'minus',
+    '!' => 'not',
+    '+' => 'plus',
+    '-' => 'minus',
 );
 
 has lvar_id => ( # local varialbe id
@@ -301,9 +295,6 @@ sub _generate_command {
                 [ $proc => undef, $node->line ];
         }
     }
-    if(!@code) {
-        $self->_error($node, "$node requires at least one argument");
-    }
     return @code;
 }
 sub _generate_bare_command {
@@ -341,13 +332,13 @@ sub _generate_for {
     my $expr  = $node->first;
     my $vars  = $node->second;
     my $block = $node->third;
-
     if(@{$vars} != 1) {
-        $self->_error($node, "A for-loop requires single variable for each items");
+        $self->_error($node, "For-loop requires single variable for each items");
     }
+    my($iter_var) = @{$vars};
+
     my @code = $self->_generate_expr($expr);
 
-    my($iter_var) = @{$vars};
     my $lvar_id   = $self->lvar_id;
     my $lvar_name = $iter_var->id;
 
@@ -365,44 +356,6 @@ sub _generate_for {
         [ for_iter  => scalar(@block_code) + 2 ],
         @block_code,
         [ goto      => -(scalar(@block_code) + 2), undef, "end for" ];
-
-    return @code;
-}
-
-sub _generate_while {
-    my($self, $node) = @_;
-    my $expr  = $node->first;
-    my $vars  = $node->second;
-    my $block = $node->third;
-
-    if(@{$vars} > 1) {
-        $self->_error($node, "A while-loop requires one or zero variable for each items");
-    }
-    my @code = $self->_generate_expr($expr);
-
-    my($iter_var) = @{$vars};
-    my($lvar_id, $lvar_name);
-
-    if(@{$vars}) {
-        $lvar_id   = $self->lvar_id;
-        $lvar_name = $iter_var->id;
-    }
-
-    local $self->lvar->{$lvar_name} = [ fetch_lvar => $lvar_id, undef, $lvar_name ]
-        if @{$vars};
-
-    # a for statement uses three local variables (container, iterator, and item)
-    $self->_lvar_use(scalar @{$vars});
-    my @block_code = $self->_compile_ast($block);
-    $self->_lvar_release(scalar @{$vars});
-
-    push @code, [ save_to_lvar => $lvar_id, $expr->line, $lvar_name ]
-        if @{$vars};
-
-    push @code,
-        [ and  => scalar(@block_code) + 2, undef, "while" ],
-        @block_code,
-        [ goto => -(scalar(@block_code) + scalar(@code) + 1), undef, "end while" ];
 
     return @code;
 }
@@ -541,34 +494,26 @@ sub _generate_binary {
                 [ fetch_field_s => $node->second->id ];
         }
         when(%bin) {
-            my @code = $self->_generate_expr($node->first);
-            push @code, [ save_to_lvar => $self->lvar_id ];
-            $self->_lvar_use(1);
+            my $lvar = $self->lvar_id;
+            my @code = (
+                $self->_generate_expr($node->first),
+                [ store_to_lvar => $lvar ],
+            );
 
+            $self->_lvar_use(1);
             push @code, $self->_generate_expr($node->second);
             $self->_lvar_release(1);
 
             push @code,
-                [ load_lvar_to_sb => $self->lvar_id ],
+                [ load_lvar_to_sb => $lvar ],
                 [ $bin{$_}   => undef ];
-
-            if($_ ~~ [qw(min max)]) {
-                # swap operands before comparison
-                splice @code, -1, 0,
-                    [save_to_lvar => $self->lvar_id ]; # save lhs
-                push @code,
-                    [ or              => +2 , undef, undef, $_ ],
-                    [ load_lvar_to_sb => $self->lvar_id ], # on false
-                    # fall through
-                    [ move_from_sb    => () ],             # on true
-            }
             return @code;
         }
-        when(%logical_bin) {
+        when(%bin_r) {
             my @right = $self->_generate_expr($node->second);
             return
                 $self->_generate_expr($node->first),
-                [ $logical_bin{$_} => scalar(@right) + 1 ],
+                [ $bin_r{$_} => scalar(@right) + 1 ],
                 @right;
         }
         default {
@@ -580,9 +525,12 @@ sub _generate_binary {
 
 sub _generate_ternary { # the conditional operator
     my($self, $node) = @_;
+
     my @expr = $self->_generate_expr($node->first);
     my @then = $self->_generate_expr($node->second);
+
     my @else = $self->_generate_expr($node->third);
+
     return(
         @expr,
         [ and  => scalar(@then) + 2, $node->line, 'ternary' ],
@@ -592,26 +540,13 @@ sub _generate_ternary { # the conditional operator
     );
 }
 
-sub _generate_methodcall {
-    my($self, $node) = @_;
-    my $args   = $node->third;
-    my $method = $node->second->id;
-    return (
-        [ pushmark => undef, undef, $method ],
-        $self->_generate_expr($node->first),
-        [ 'push' ],
-        (map { $self->_generate_expr($_), [ 'push' ] } @{$args}),
-        [ methodcall_s => $method ],
-    );
-}
-
 sub _generate_call {
     my($self, $node) = @_;
     my $callable = $node->first; # function or macro
     my $args     = $node->second;
 
     my @code = (
-        [ pushmark => undef, undef, $callable->id ],
+        [ pushmark => () ],
         (map { $self->_generate_expr($_), [ 'push' ] } @{$args}),
         $self->_generate_expr($callable),
     );
@@ -708,22 +643,22 @@ sub _optimize {
                     $j++;
                 }
             }
-            when('save_to_lvar') {
+            when('store_to_lvar') {
                 # use registers, instead of local variables
                 #
                 # given:
-                #   save_to_lvar $n
-                #   <single-op>
+                #   store_to_lvar $n
+                #   blah blah blah
                 #   load_lvar_to_sb $n
                 # convert into:
-                #   move_to_sb
-                #   <single-op>
+                #   move_sa_to_sb
+                #   blah blah blah
                 my $it = $c->[$i];
                 my $nn = $c->[$i+2]; # next next
                 if(defined($nn)
                     && $nn->[0] eq 'load_lvar_to_sb'
                     && $nn->[1] == $it->[1]) {
-                    @{$it} = ('move_to_sb', undef, undef, "ex-$it->[0]");
+                    @{$it} = ('move_sa_to_sb', undef, undef, "ex-$it->[0]");
 
                     _noop($nn);
                 }
