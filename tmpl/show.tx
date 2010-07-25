@@ -1,4 +1,5 @@
-: cascade 'base.tx';
-: around content -> {
-<pre><:= $body :></pre>
-: }
+[% INCLUDE 'include/header.tt' %]
+
+<pre>[% body %]</pre>
+
+[% INCLUDE 'include/footer.tt' %]

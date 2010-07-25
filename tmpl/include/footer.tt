@@ -1,0 +1,9 @@
+        </div>
+        <div class="clear-both"></div>
+        <div id="FooterContainer"><div id="Footer">
+            <div class="about">OreOre::NoPaste, powered by <a href="http://plackperl.org/">Plack</a></div>
+            <div class="copyright">Copyright (C) 2009 64p.org</div>
+        </div></div>
+    </div>
+</body>
+</html>
