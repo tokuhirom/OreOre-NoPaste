@@ -8,6 +8,7 @@ requires 'Mouse';
 requires 'Log::Dispatch';
 requires 'parent';
 requires 'DBIx::Skinny';
+requires 'Data::UUID';
 
 tests 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t';
 test_requires 'Test::More';
