@@ -1,8 +1,10 @@
 package NoPaste::Web::C;
 use strict;
 use warnings;
+use utf8;
 use Router::Simple::Sinatraish;
 use Data::UUID;
+use Encode;
 
 my $uuid_gen = Data::UUID->new();
 
@@ -13,7 +15,7 @@ get '/' => sub {
 
 post '/post' => sub {
     my ($c) = @_;
-    my $body = $c->req->param('body');
+    my $body = decode_utf8($c->req->param('body'));
     my $uuid = $uuid_gen->create_str();
     $c->db->insert(
         entry => {
