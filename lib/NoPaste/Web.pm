@@ -3,9 +3,8 @@ use Mouse;
 use NoPaste;
 use NoPaste::ConfigLoader;
 use Text::Xslate 0.1047;
-use Plack::Request;
 use NoPaste::Web::Response;
-use Module::Find qw/useall/;
+use NoPaste::Web::Request;
 use Encode;
 use Log::Dispatch;
 use NoPaste::Web::C;
@@ -43,7 +42,7 @@ has req => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        Plack::Request->new( $self->env );
+        NoPaste::Web::Request->new( $self->env );
     }
 );
 
