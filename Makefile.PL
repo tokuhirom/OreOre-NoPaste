@@ -1,21 +1,15 @@
 use inc::Module::Install;
-name 'NoPaste';
-all_from 'lib/NoPaste.pm';
+all_from "lib/NoPaste.pm";
 
-requires 'Text::Xslate' => 0.1047;
+tests 't/*.t t/*/*.t t/*/*/*.t';
+requires 'Amon2';
+requires 'Text::Xslate';
 requires 'Text::Xslate::Bridge::TT2Like';
-requires 'Mouse';
-requires 'Log::Dispatch';
-requires 'parent';
+requires 'Plack::Middleware::ReverseProxy';
+requires 'HTML::FillInForm::Lite';
+requires 'Time::Piece';
 requires 'DBIx::Skinny';
 requires 'Data::UUID';
+recursive_author_tests('xt');
 
-tests 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t';
-test_requires 'Test::More';
-test_requires 'YAML';
-test_requires 'Test::WWW::Mechanize::PSGI';
-test_requires 'Test::Requires';
-author_tests('xt');
-auto_include;
 WriteAll;
-

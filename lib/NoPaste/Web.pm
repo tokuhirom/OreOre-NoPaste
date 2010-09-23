@@ -1,113 +1,27 @@
 package NoPaste::Web;
-use Mouse;
-use NoPaste;
-use NoPaste::ConfigLoader;
-use Text::Xslate 0.1047;
-use NoPaste::Web::Response;
-use NoPaste::Web::Request;
-use Encode;
-use Log::Dispatch;
-use NoPaste::Web::C;
-use File::Spec;
-
-extends 'NoPaste';
-
-our $VERSION = '0.01';
-
-has 'log' => (
-    is      => 'ro',
-    isa     => 'Log::Dispatch',
-    lazy    => 1,
-    default => sub {
-        my $self = shift;
-        Log::Dispatch->new( %{ $self->config->{'Log::Dispatch'} || {} } );
-    },
-);
-
-has config => (
-    is       => 'ro',
-    isa      => 'HashRef',
-    required => 1,
-);
-
-has env => (
-    is => 'ro',
-    isa => 'HashRef',
-    required => 1,
-);
-
-has req => (
-    is      => 'ro',
-    isa     => 'Plack::Request',
-    lazy    => 1,
-    default => sub {
-        my $self = shift;
-        NoPaste::Web::Request->new( $self->env );
+use strict;
+use warnings;
+use parent qw/NoPaste Amon2::Web/;
+__PACKAGE__->add_config(
+    'Text::Xslate' => {
+        'syntax'   => 'TTerse',
+        'module'   => [ 'Text::Xslate::Bridge::TT2Like' ],
+        'function' => {
+            c => sub { Amon2->context() },
+            uri_with => sub { Amon2->context()->req->uri_with(@_) },
+            uri_for  => sub { Amon2->context()->uri_for(@_) },
+        },
     }
 );
-
-has args => (
-    is       => 'rw',
-    isa      => 'ArrayRef',
+__PACKAGE__->setup(
+    view_class => 'Text::Xslate',
 );
+__PACKAGE__->load_plugins('Web::FillInFormLite');
+__PACKAGE__->load_plugins('Web::NoCache');
 
-has res => (
-    is      => 'ro',
-    isa     => 'Plack::Response',
-    default => sub {
-        NoPaste::Web::Response->new;
-    },
-);
-
-sub request  { shift->req(@_) }
-sub response { shift->res(@_) }
-
-sub to_app {
-    my ($class) = @_;
-
-    my $config = NoPaste::ConfigLoader->load;
-    sub {
-        my $env = shift;
-        my $c = $class->new(env => $env, config => $config);
-        no warnings 'redefine';
-        local *NoPaste::context = sub { $c };
-        if (my $m = NoPaste::Web::C->router->match($env)) {
-            $m->{code}->($c, $m);
-            return $c->res->finalize;
-        } else {
-            my $content = 'not found';
-            return [404, ['Content-Length' => length($content)], [$content]];
-        }
-    };
+sub show_error {
+    my ($c, $message) = @_;
+    $c->render('show_error.tt', {message => $message});
 }
 
-my $tx = Text::Xslate->new(
-    syntax => 'TTerse',
-    module => ['Text::Xslate::Bridge::TT2Like'],
-    path   => [__PACKAGE__->root . "/tmpl"],
-    function => {
-        c => sub { NoPaste::context() },
-        uri_for => sub {
-            my ( $path, $args ) = @_;
-            my $req = NoPaste::context()->req();
-            my $uri = $req->base;
-            $uri->path( do {
-                my $p = $uri->path . $path;
-                $p =~ s!//!!;
-                $p;
-            } );
-            $uri->query_form(@$args) if $args;
-            $uri;
-        },
-    },
-);
-sub render {
-    my ($self, @args) = @_;
-    my $body = $tx->render(@args);
-    $self->res->status(200);
-    $self->res->content_type('text/html; charset=utf-8');
-    $self->res->body(encode_utf8($body));
-}
-
-no Mouse;__PACKAGE__->meta->make_immutable;
-
+1;
