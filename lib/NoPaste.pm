@@ -2,7 +2,7 @@ package NoPaste;
 use strict;
 use warnings;
 use parent qw/Amon2/;
-our $VERSION='0.01';
+our $VERSION='0.02';
 
 __PACKAGE__->load_plugins(qw/ConfigLoader LogDispatch/);
 use NoPaste::DB;

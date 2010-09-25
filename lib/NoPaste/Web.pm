@@ -10,6 +10,7 @@ __PACKAGE__->add_config(
             c => sub { Amon2->context() },
             uri_with => sub { Amon2->context()->req->uri_with(@_) },
             uri_for  => sub { Amon2->context()->uri_for(@_) },
+            version => sub { @_ == 1 ? $_[0]->VERSION : NoPaste->VERSION }, 
         },
     }
 );
