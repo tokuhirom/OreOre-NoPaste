@@ -14,9 +14,14 @@ __PACKAGE__->add_config(
         },
     }
 );
-__PACKAGE__->setup(
-    view_class => 'Text::Xslate',
-);
+
+use Tiffany::Text::Xslate;
+my $view = Tiffany::Text::Xslate->new(__PACKAGE__->config->{'Text::Xslate'});
+sub create_view { $view }
+
+use NoPaste::Web::Dispatcher;
+sub dispatch { NoPaste::Web::Dispatcher->dispatch(@_) }
+
 __PACKAGE__->load_plugins('Web::FillInFormLite');
 __PACKAGE__->load_plugins('Web::NoCache');
 
