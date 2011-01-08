@@ -4,7 +4,7 @@ use warnings;
 use parent qw/Amon2/;
 our $VERSION='0.02';
 
-__PACKAGE__->load_plugins(qw/ConfigLoader LogDispatch/);
+__PACKAGE__->load_plugins(qw/ConfigLoader/);
 use NoPaste::DB;
 
 sub db {
