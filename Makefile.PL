@@ -8,8 +8,8 @@ requires 'Text::Xslate::Bridge::TT2Like';
 requires 'Plack::Middleware::ReverseProxy';
 requires 'HTML::FillInForm::Lite';
 requires 'Time::Piece';
-requires 'DBIx::Skinny';
 requires 'Data::UUID';
+requires 'Amon2::DBI';
 recursive_author_tests('xt');
 
 WriteAll;
