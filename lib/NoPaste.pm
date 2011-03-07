@@ -4,8 +4,10 @@ use warnings;
 use parent qw/Amon2/;
 our $VERSION='0.02';
 
-__PACKAGE__->load_plugins(qw/ConfigLoader/);
 use NoPaste::DB;
+
+use Amon2::Config::Simple;
+sub load_config { Amon2::Config::Simple->load(shift) }
 
 sub db {
     my ($c) = @_;
