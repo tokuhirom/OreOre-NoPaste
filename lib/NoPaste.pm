@@ -2,16 +2,18 @@ package NoPaste;
 use strict;
 use warnings;
 use parent qw/Amon2/;
+use 5.010001;
 our $VERSION='0.02';
 
-__PACKAGE__->load_plugins(qw/ConfigLoader/);
-use NoPaste::DB;
+use Amon2::Config::Simple;
+sub load_config { Amon2::Config::Simple->load(shift) }
 
-sub db {
+use Amon2::DBI;
+sub dbh {
     my ($c) = @_;
-    $c->{db} ||= do {
-        my $conf = $c->config->{'DBIx::Skinny'} || die "missing configuration for DBIx::Skinny";
-        NoPaste::DB->new($conf);
+    $c->{dbh} //= do {
+        my $conf = $c->config->{'DBI'} || die "missing configuration for DBI";
+        Amon2::DBI->connect(@$conf);
     };
 }
 

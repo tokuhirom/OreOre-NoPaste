@@ -1,4 +1,6 @@
 package NoPaste::Web::Dispatcher;
+use strict;
+use warnings;
 
 use Amon2::Web::Dispatcher::Lite;
 use Data::UUID;
@@ -14,7 +16,7 @@ post '/post' => sub {
     my ($c) = @_;
     if (my $body = $c->req->param('body')) {
         my $entry_id = $uuid->create_str();
-        $c->db->insert(
+        $c->dbh->insert(
             entry => {
                 entry_id => $entry_id,
                 body     => $body,
@@ -29,9 +31,11 @@ post '/post' => sub {
 get '/entry/{entry_id}' => sub {
     my ($c, $args) = @_;
     my $entry_id = $args->{entry_id} // die;
-    my $entry = $c->db->single(entry => { entry_id => $entry_id });
-    return $c->res_404() unless $entry;
-    return $c->render('show.tt', { body => $entry->body });
+    my ($body) = $c->dbh->selectrow_array(
+        q{SELECT body FROM entry WHERE entry_id=?}, {}, $entry_id
+    );
+    return $c->res_404() unless $body;
+    return $c->render('show.tt', { body => $body });
 };
 
 1;

@@ -5,11 +5,12 @@
     <title>NoPaste</title>
     <meta http-equiv="Content-Style-Type" content="text/css" />  
     <meta http-equiv="Content-Script-Type" content="text/javascript" />  
-    <link href="/static/css/app.css" rel="stylesheet" type="text/css" media="screen" />
+    <link href="/static/css/main.css" rel="stylesheet" type="text/css" media="screen" />
 </head>
 <body id="[% IF bodyID %][% bodyID %][% ELSE %]Default[% END %]">
     <div id="Container">
-        <div id="Header">
+        <header>
             <a href="[% uri_for('/') %]">Yet Another NoPaste Site</a>
-        </div>
+        </header>
+        <hr />
         <div id="Content">

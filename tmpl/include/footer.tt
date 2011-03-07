@@ -1,9 +1,9 @@
         </div>
-        <div class="clear-both"></div>
-        <div id="FooterContainer"><div id="Footer">
-            <div class="about">NoPaste [% version('NoPaste') %], powered by <a href="http://plackperl.org/">Plack</a> [% version('Plack') %], Amon2 [% version('Amon2') %]</div>
-            <div class="copyright">Copyright (C) 2009 64p.org</div>
-        </div></div>
+        <hr />
+        <footer>
+            <div class="about">NoPaste [% version('NoPaste') %], powered by <a href="http://plackperl.org/">Plack</a> [% version('Plack') %], <a href="http://amon.64p.org/">Amon2</a> [% version('Amon2') %]</div>
+            <div class="copyright">Copyright (C) 2009-2011 64p.org</div>
+        </footer>
     </div>
 </body>
 </html>
